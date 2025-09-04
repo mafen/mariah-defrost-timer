@@ -32,15 +32,28 @@
       line-height: 30px;
       color: white;
       animation: pulse 2s infinite;
+      transition: all 0.5s ease;
     }
     @keyframes pulse {
       0% { filter: brightness(1); }
       50% { filter: brightness(1.5); }
       100% { filter: brightness(1); }
     }
+    .progress-bar.build-up {
+      animation: buildUp 1s infinite alternate;
+    }
+    @keyframes buildUp {
+      0% { transform: scaleX(1); background: #FF4136; }
+      100% { transform: scaleX(1.05); background: #FFDC00; }
+    }
     .timer {
       font-size: 1.2em;
       margin-top: 20px;
+      transition: color 0.5s ease;
+    }
+    .timer.build-up {
+      color: #FFDC00;
+      font-weight: bold;
     }
     .snowflake {
       position: fixed;
@@ -88,6 +101,22 @@
       top: 0;
       transition: opacity 1s ease-out;
     }
+    .shard {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 20px solid rgba(173,216,230,0.8);
+      opacity: 0;
+      animation: fly 1s forwards;
+    }
+    @keyframes fly {
+      to {
+        transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -107,18 +136,22 @@
     <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
   </div>
 
+  <div style="margin-top:20px;">
+    <button onclick="toggleTestMode()">Toggle Test Mode</button>
+    <button onclick="shatterIce()">Force Shatter</button>
+  </div>
+
   <script>
+    let testMode = false;
+
     function updateDefrostingTimer() {
       const start = new Date(new Date().getFullYear(), 7, 1); // August 1
       const end = new Date(new Date().getFullYear(), 11, 1); // December 1
-      const now = new Date();
+      let now = new Date();
 
-      if (now > end) {
-        document.getElementById("progress-bar").style.width = "100%";
-        document.getElementById("progress-bar").textContent = "100%";
-        document.getElementById("timer").textContent = "Mariah has fully defrosted! 🎄";
-        document.getElementById("ice-block").style.opacity = 0;
-        return;
+      if (testMode) {
+        // Fake date in late November for testing build-up/shatter
+        now = new Date(new Date().getFullYear(), 10, 30, 23, 59, 50); 
       }
 
       const total = end - start;
@@ -126,8 +159,29 @@
       const percentage = Math.max(0, Math.min(100, (elapsed / total) * 100));
 
       const progressBar = document.getElementById("progress-bar");
+      const timer = document.getElementById("timer");
+
+      if (now > end) {
+        progressBar.style.width = "100%";
+        progressBar.textContent = "100%";
+        progressBar.classList.remove("build-up");
+        timer.classList.remove("build-up");
+        timer.textContent = "Mariah has fully defrosted! 🎄";
+        shatterIce();
+        return;
+      }
+
       progressBar.style.width = percentage.toFixed(2) + "%";
       progressBar.textContent = percentage.toFixed(2) + "%";
+
+      // Build-up animation when above 90%
+      if (percentage > 90) {
+        progressBar.classList.add("build-up");
+        timer.classList.add("build-up");
+      } else {
+        progressBar.classList.remove("build-up");
+        timer.classList.remove("build-up");
+      }
 
       // Ice block melts gradually
       const iceBlock = document.getElementById("ice-block");
@@ -143,8 +197,30 @@
       const minutes = Math.floor((remaining / (1000 * 60)) % 60);
       const seconds = Math.floor((remaining / 1000) % 60);
 
-      document.getElementById("timer").textContent = 
-        `${days}d ${hours}h ${minutes}m ${seconds}s until full defrost.`;
+      timer.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s until full defrost.`;
+    }
+
+    function shatterIce() {
+      const iceBlock = document.getElementById("ice-block");
+      iceBlock.style.opacity = 0; // hide block quickly
+
+      for (let i = 0; i < 12; i++) {
+        const shard = document.createElement("div");
+        shard.classList.add("shard");
+
+        // random trajectory
+        shard.style.setProperty("--dx", (Math.random() * 400 - 200) + "px");
+        shard.style.setProperty("--dy", (Math.random() * 400 - 200) + "px");
+        shard.style.setProperty("--rot", (Math.random() * 720 - 360) + "deg");
+
+        shard.style.left = "50%";
+        shard.style.top = "50%";
+        shard.style.opacity = 1;
+
+        document.body.appendChild(shard);
+
+        setTimeout(() => shard.remove(), 1200);
+      }
     }
 
     function createSnowflake() {
@@ -159,6 +235,12 @@
       setTimeout(() => {
         snowflake.remove();
       }, 10000);
+    }
+
+    function toggleTestMode() {
+      testMode = !testMode;
+      alert("Test Mode: " + (testMode ? "ON (simulating late November)" : "OFF (using real date)"));
+      updateDefrostingTimer();
     }
 
     setInterval(updateDefrostingTimer, 1000);
