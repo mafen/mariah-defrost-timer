@@ -4,120 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mariah Carey Defrosting Timer</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #001f3f, #0074D9);
-      color: white;
-      text-align: center;
-      padding: 50px;
-      overflow: hidden;
-    }
-    h1 {
-      font-size: 2.5em;
-    }
-    .progress-container {
-      width: 80%;
-      margin: 20px auto;
-      background: #111;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 0 15px rgba(255,255,255,0.3);
-    }
-    .progress-bar {
-      height: 30px;
-      background: linear-gradient(90deg, #FF4136, #FF851B);
-      width: 0%;
-      text-align: center;
-      line-height: 30px;
-      color: white;
-      animation: pulse 2s infinite;
-      transition: all 0.5s ease;
-    }
-    @keyframes pulse {
-      0% { filter: brightness(1); }
-      50% { filter: brightness(1.5); }
-      100% { filter: brightness(1); }
-    }
-    .progress-bar.build-up {
-      animation: buildUp 1s infinite alternate;
-    }
-    @keyframes buildUp {
-      0% { transform: scaleX(1); background: #FF4136; }
-      100% { transform: scaleX(1.05); background: #FFDC00; }
-    }
-    .timer {
-      font-size: 1.2em;
-      margin-top: 20px;
-      transition: color 0.5s ease;
-    }
-    .timer.build-up {
-      color: #FFDC00;
-      font-weight: bold;
-    }
-    .snowflake {
-      position: fixed;
-      top: -10px;
-      color: white;
-      font-size: 1em;
-      user-select: none;
-      pointer-events: none;
-      animation-name: fall;
-      animation-timing-function: linear;
-    }
-    @keyframes fall {
-      to {
-        transform: translateY(110vh);
-      }
-    }
-    .mariah-container {
-      margin-top: 40px;
-      position: relative;
-      display: inline-block;
-    }
-    .ice-block {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 220px;
-      height: 280px;
-      background: rgba(173, 216, 230, 0.6);
-      border: 2px solid rgba(255, 255, 255, 0.6);
-      border-radius: 20px;
-      z-index: 1;
-      box-shadow: inset 0 0 25px rgba(255,255,255,0.7);
-      overflow: hidden;
-      transition: opacity 1s ease-out;
-    }
-    .crack {
-      position: absolute;
-      width: 2px;
-      height: 100%;
-      background: white;
-      opacity: 0.5;
-      transform: rotate(20deg);
-      left: 50%;
-      top: 0;
-      transition: opacity 1s ease-out;
-    }
-    .shard {
-      position: absolute;
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-bottom: 20px solid rgba(173,216,230,0.8);
-      opacity: 0;
-      animation: fly 1s forwards;
-    }
-    @keyframes fly {
-      to {
-        transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
-        opacity: 0;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="test.css">
 </head>
 <body>
   <h1>Mariah Carey Defrosting Timer ❄️</h1>
@@ -130,123 +18,18 @@
     <div class="ice-block" id="ice-block">
       <div class="crack" id="crack"></div>
     </div>
-    <div class="tenor-gif-embed" data-postid="26336885" data-share-method="host" data-aspect-ratio="1.00946" data-width="220px">
-      <a href="https://tenor.com/view/mariah-carey-mariah-carey-christmas-mariah-carey-defrosting-christmas-gif-26336885">Mariah Carey Christmas GIF</a>
-    </div>
-    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+    <img
+      class="mariah-gif"
+      src="assets/mariah-carey-christmas-hd.gif"
+      alt="Mariah Carey defrosting for Christmas"
+    >
   </div>
 
-  <div style="margin-top:20px;">
-    <button onclick="toggleTestMode()">Toggle Test Mode</button>
-    <button onclick="shatterIce()">Force Shatter</button>
+  <div class="test-controls">
+    <button type="button" onclick="toggleTestMode()">Toggle Test Mode</button>
+    <button type="button" onclick="shatterIce()">Force Shatter</button>
   </div>
 
-  <script>
-    let testMode = false;
-
-    function updateDefrostingTimer() {
-      const start = new Date(new Date().getFullYear(), 7, 1); // August 1
-      const end = new Date(new Date().getFullYear(), 11, 1); // December 1
-      let now = new Date();
-
-      if (testMode) {
-        // Fake date in late November for testing build-up/shatter
-        now = new Date(new Date().getFullYear(), 10, 30, 23, 59, 50); 
-      }
-
-      const total = end - start;
-      const elapsed = now - start;
-      const percentage = Math.max(0, Math.min(100, (elapsed / total) * 100));
-
-      const progressBar = document.getElementById("progress-bar");
-      const timer = document.getElementById("timer");
-
-      if (now > end) {
-        progressBar.style.width = "100%";
-        progressBar.textContent = "100%";
-        progressBar.classList.remove("build-up");
-        timer.classList.remove("build-up");
-        timer.textContent = "Mariah has fully defrosted! 🎄";
-        shatterIce();
-        return;
-      }
-
-      progressBar.style.width = percentage.toFixed(2) + "%";
-      progressBar.textContent = percentage.toFixed(2) + "%";
-
-      // Build-up animation when above 90%
-      if (percentage > 90) {
-        progressBar.classList.add("build-up");
-        timer.classList.add("build-up");
-      } else {
-        progressBar.classList.remove("build-up");
-        timer.classList.remove("build-up");
-      }
-
-      // Ice block melts gradually
-      const iceBlock = document.getElementById("ice-block");
-      iceBlock.style.opacity = (100 - percentage) / 100;
-
-      // Crack becomes more visible as time passes
-      const crack = document.getElementById("crack");
-      crack.style.opacity = percentage / 100;
-
-      const remaining = end - now;
-      const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((remaining / (1000 * 60)) % 60);
-      const seconds = Math.floor((remaining / 1000) % 60);
-
-      timer.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s until full defrost.`;
-    }
-
-    function shatterIce() {
-      const iceBlock = document.getElementById("ice-block");
-      iceBlock.style.opacity = 0; // hide block quickly
-
-      for (let i = 0; i < 12; i++) {
-        const shard = document.createElement("div");
-        shard.classList.add("shard");
-
-        // random trajectory
-        shard.style.setProperty("--dx", (Math.random() * 400 - 200) + "px");
-        shard.style.setProperty("--dy", (Math.random() * 400 - 200) + "px");
-        shard.style.setProperty("--rot", (Math.random() * 720 - 360) + "deg");
-
-        shard.style.left = "50%";
-        shard.style.top = "50%";
-        shard.style.opacity = 1;
-
-        document.body.appendChild(shard);
-
-        setTimeout(() => shard.remove(), 1200);
-      }
-    }
-
-    function createSnowflake() {
-      const snowflake = document.createElement('div');
-      snowflake.classList.add('snowflake');
-      snowflake.textContent = '❄️';
-      snowflake.style.left = Math.random() * window.innerWidth + 'px';
-      snowflake.style.animationDuration = (Math.random() * 5 + 5) + 's';
-      snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-      document.body.appendChild(snowflake);
-
-      setTimeout(() => {
-        snowflake.remove();
-      }, 10000);
-    }
-
-    function toggleTestMode() {
-      testMode = !testMode;
-      alert("Test Mode: " + (testMode ? "ON (simulating late November)" : "OFF (using real date)"));
-      updateDefrostingTimer();
-    }
-
-    setInterval(updateDefrostingTimer, 1000);
-    updateDefrostingTimer();
-
-    setInterval(createSnowflake, 200);
-  </script>
+  <script src="timer.js"></script>
 </body>
 </html>
