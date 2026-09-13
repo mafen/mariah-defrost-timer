@@ -1,0 +1,72 @@
+.progress-bar {
+  transition: all 0.5s ease;
+}
+
+.progress-bar.build-up {
+  animation: buildUp 1s infinite alternate;
+}
+
+@keyframes buildUp {
+  0% { transform: scaleX(1); background: #FF4136; }
+  100% { transform: scaleX(1.05); background: #FFDC00; }
+}
+
+.timer {
+  transition: color 0.5s ease;
+}
+
+.timer.build-up {
+  color: #FFDC00;
+  font-weight: bold;
+}
+
+.shard {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid rgba(173,216,230,0.8);
+  opacity: 0;
+  animation: fly 1s forwards;
+}
+
+@keyframes fly {
+  to {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+.test-controls {
+  position: relative;
+  z-index: 5;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+
+  /* The original ice block is 280px tall while the GIF is about 218px,
+     so leave enough room below the image before showing the controls. */
+  margin-top: 80px;
+}
+
+.test-controls button {
+  padding: 10px 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+
+  color: white;
+  font: inherit;
+  font-weight: bold;
+
+  background: rgba(0, 31, 63, 0.9);
+  cursor: pointer;
+}
+
+.test-controls button:hover,
+.test-controls button:focus-visible {
+  background: rgba(0, 116, 217, 0.95);
+}
